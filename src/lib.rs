@@ -51,15 +51,21 @@ impl LegacyTransaction {
 
 // Transaction builder
 pub struct LegacyTransactionBuilder {
-    version: i32,
-    inputs: Vec<TxInput>,
-    outputs: Vec<TxOutput>,
-    lock_time: u32,
+    pub version: i32,
+    pub inputs: Vec<TxInput>,
+    pub outputs: Vec<TxOutput>,
+    pub lock_time: u32,
+}
+
+impl Default for LegacyTransactionBuilder {
+    fn default() -> Self {
+        // TODO: Implement default values
+    }
 }
 
 impl LegacyTransactionBuilder {
     pub fn new() -> Self {
-        // TODO: Initialize builder with default values
+        // TODO: Initialize new builder by calling default
     }
 
     pub fn version(mut self, version: i32) -> Self {

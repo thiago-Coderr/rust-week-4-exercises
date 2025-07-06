@@ -8,16 +8,58 @@ fn test_point_creation() {
 }
 
 #[test]
-fn test_transaction_builder() {
-    let tx = LegacyTransaction::builder()
-        .version(2)
-        .lock_time(500000)
-        .build();
+fn test_builder_default() {
+    let builder = LegacyTransactionBuilder::default();
 
-    assert_eq!(tx.version, 2);
-    assert_eq!(tx.lock_time, 500000);
+    assert_eq!(builder.version, 1);
+    assert!(builder.inputs.is_empty());
+    assert!(builder.outputs.is_empty());
+    assert_eq!(builder.lock_time, 0);
+}
+
+#[test]
+fn test_builder_new_uses_default() {
+    let default_builder = LegacyTransactionBuilder::default();
+    let new_builder = LegacyTransactionBuilder::new();
+
+    assert_eq!(default_builder.version, new_builder.version);
+    assert_eq!(default_builder.inputs.len(), new_builder.inputs.len());
+    assert_eq!(default_builder.outputs.len(), new_builder.outputs.len());
+    assert_eq!(default_builder.lock_time, new_builder.lock_time);
+}
+
+#[test]
+fn test_builder_method_chaining() {
+    let builder = LegacyTransactionBuilder::default()
+        .version(2)
+        .add_input(TxInput {
+            previous_output: OutPoint {
+                txid: [0; 32],
+                vout: 0,
+            },
+            script_sig: vec![],
+            sequence: 0xFFFFFFFF,
+        })
+        .add_output(TxOutput {
+            value: 50_000_000, // 0.5 BTC
+            script_pubkey: vec![],
+        })
+        .lock_time(500_000);
+
+    assert_eq!(builder.version, 2);
+    assert_eq!(builder.inputs.len(), 1);
+    assert_eq!(builder.outputs.len(), 1);
+    assert_eq!(builder.lock_time, 500_000);
+}
+
+#[test]
+fn test_builder_build() {
+    let tx = LegacyTransactionBuilder::default().version(1).build();
+
+    assert_eq!(tx.version, 1);
     assert!(tx.inputs.is_empty());
     assert!(tx.outputs.is_empty());
+    assert_eq!(tx.lock_time, 0);
 }
 
 #[test]
